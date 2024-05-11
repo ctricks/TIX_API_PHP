@@ -11,23 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $tableAffected = 'tblusers';
 
-$UserID = '';
-$Username = '';
+$UserID = isset($_GET['id']) ? $_GET['id'] : '';
+$Username = isset($_GET['username']) ? $_GET['username'] : '';
 
-if(!isset($_GET['id']) && !isset($_GET['username']))
+if($UserID == '' && $UserID == '')
 {
     $UserID = '';
     $Username = '';
-}
-
-if(isset($_GET['id']))
-{
-    $UserID = $_GET['id'];
-}
-
-if(isset($_GET['username']))
-{
-    $Username = $_GET['username'];
 }
 
 // Disable autocommit for database transactions
@@ -47,7 +37,7 @@ try {
         $filter = ' where Username = ' . $Username;
     }
     
-    if(!isset($_GET['username']) && !$_GET['id']) // Update isActive status must been filtered in order to not apply in all records
+    if($Username == '' && $UserID == '') // Update isActive status must been filtered in order to not apply in all records
     {
         throw new Exception('De-activate query failed. Please select a filter criteria first');
     }
@@ -69,7 +59,7 @@ try {
     // Rollback the transaction on any exception
     $conn->rollback();
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    echo json_encode(['status' => 'error'.$Username, 'message' => $e->getMessage()]);
 } finally {
     // Close the database connection
     $conn->close();

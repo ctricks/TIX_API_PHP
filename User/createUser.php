@@ -22,20 +22,14 @@ try {
     // if (!isset($requestData['table'])) {
     //     throw new Exception('Missing required parameters: table');
     // }
-
+    
+    
     // Check if 'data' parameter exists in the request data
-    if (!isset($requestData['data'])) {
+    if (!isset($requestData)) {
         throw new Exception('Missing required parameters: data');
-    }
+    }else{
 
-    // Perform validation if 'validation' parameter exists in the request data
-    if (isset($requestData['validation'])) {
-        $validationResult = validateData($requestData['data'][0], $requestData['validation'][0], $conn, $requestData['table'], $conditions = []);
-        if ($validationResult !== null) {
-            throw new Exception($validationResult);
-        }
     }
-
     // Prepare SQL query for insertion
     // $table = $requestData['table'];
     $table = $tableAffected;//For fixed table name;

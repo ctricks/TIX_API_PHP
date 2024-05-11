@@ -3,27 +3,9 @@ require('../configuration/connection.php');
 require('../configuration/functions.php');
 
 $tableAffected = 'tblusers';
-$UserID = '';
-$Username = '';
-
-if(!isset($_GET['id']) && !isset($_GET['username']))
-{
-    $UserID = '';
-    $Username = '';
-}
-
-if(isset($_GET['id']))
-{
-    $UserID = $_GET['id'];
-}
-
-if(isset($_GET['username']))
-{
-    $Username = $_GET['username'];
-}
 
 // Check if the request method is POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json') {
     http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method or content type']);
     exit;
@@ -32,22 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Disable autocommit for database transactions
 $conn->autocommit(false);
 
-$filter = '';
-
-if($UserID <> '')
-{
-    $filter = ' where ID = ' . $UserID;
-}
-
-if($Username <> '')
-{
-    $filter = ' where Username = ' . $Username;
-}
-
-$selectStatement= "Select * from " . $tableAffected . ' ' . $filter . " order by Username asc;";
-
 try {
-   
+    $requestData = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
+
+    //Check the Payload if has or none
+    if (!isset($requestData['data'])) {
+        throw new Exception('Missing required parameters: data');
+    }
+        
+    
+    //Get Value in Data Payload    
+    $Username = $requestData['data'][0]['Username'];
+    $Password = $requestData['data'][0]['Password'];
+
+    if(!isset($Username))
+    {
+        throw new Exception('Invalid field. Please check your payload first.');
+    }
+
+
+
+    $selectStatement = "Select Username,RoleID from tblUsers where Username = '".$Username . "' and Password='" .$Password . "';";
+
     // Execute the query
     $result = $conn->query($selectStatement);
     

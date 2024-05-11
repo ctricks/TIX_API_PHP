@@ -11,24 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $tableAffected = 'tblusers';
 
-$UserID = '';
-$Username = '';
-
-if(!isset($_GET['id']) && !isset($_GET['username']))
-{
-    $UserID = '';
-    $Username = '';
-}
-
-if(isset($_GET['id']))
-{
-    $UserID = $_GET['id'];
-}
-
-if(isset($_GET['username']))
-{
-    $Username = $_GET['username'];
-}
+$UserID = isset($_GET['id']) ? $_GET['id']:'';
+$Username = isset($_GET['username']) ? $_GET['username']:'';;
 
 // Disable autocommit for database transactions
 $conn->autocommit(false);
@@ -47,7 +31,7 @@ try {
         $filter = ' where Username = ' . $Username;
     }
     
-    if(!isset($_GET['username']) && !$_GET['id']) // Update isActive status must been filtered in order to not apply in all records
+    if($Username == '' && $UserID == '') // Update isActive status must been filtered in order to not apply in all records
     {
         throw new Exception('De-activate query failed. Please select a filter criteria first');
     }
