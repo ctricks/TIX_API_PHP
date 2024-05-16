@@ -2,23 +2,22 @@
 require('../configuration/connection.php');
 require('../configuration/functions.php');
 
-$tableAffected = 'tblusers';
-$UserID = '';
+$tableAffected = 'tblticket';
+$TixID = '';
 $UserCreatedByID = '';
-$Username = '';
+$isActive = 1;
 $DisplayFields = '';
 
-if(!isset($_GET['id']) && !isset($_GET['username']) && !isset($_GET['ucb']) && !isset($_GET['displ'])) 
+if(!isset($_GET['id']) && !isset($_GET['isActive']) && !isset($_GET['ucb'])) 
 {
-    $UserID = '';
-    $Username = '';
-    $UserCreatedBy='';
-    $DisplayFields = '';
+    $TixID = '';
+    $UserCreatedByID = '';
+    $isActive = 1;    
 }
 
 if(isset($_GET['id']))
 {
-    $UserID = $_GET['id'];
+    $TixID = $_GET['id'];
 }
 
 if(isset($_GET['ucb']))
@@ -26,15 +25,11 @@ if(isset($_GET['ucb']))
     $UserCreatedByID = $_GET['ucb'];
 }
 
-if(isset($_GET['username']))
+if(isset($_GET['isActive']))
 {
-    $Username = $_GET['username'];
+    $isActive = $_GET['isActive'];
 }
 
-if(isset($_GET['displ']))
-{
-    $DisplayFields = $_GET['displ'];
-}
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -48,26 +43,30 @@ $conn->autocommit(false);
 
 $filter = '';
 
-if($UserID <> '')
+if($TixID <> '')
 {
-    $filter = ' where u.ID = ' . $UserID;
+    $filter = ' where t.ID = ' . $TixID;
 }
 
 if($UserCreatedByID <> '')
 {
-    $filter = ' where u.CreatedByID = ' . $UserCreatedByID;
+    $filter = ' where t.CreatedByID = ' . $UserCreatedByID;
 }
 
-if($Username <> '')
+if($isActive <> '')
 {
-    $filter = ' where u.Username = ' . $Username;
+    $filter = ' where t.isActive = ' . $isActive;
 }
 
-$SelectQuery = "u.ID,u.Username,u.RoleID,r.RoleCode,r.Description,u.CreatedById," . 
-               "u.DateCreated,u.ModifiedByID,u.DateModfied,u.isActive,u.Remarks " .
-               " from " . $tableAffected . " u left join tblroles r on u.RoleID = r.ID ";
+$selectStatement = "SELECT t.ID,t.Subject,t.Description,t.isActive,t.Remarks," .
+                   "c.CategoryCode,c.CategoryName,g.GroupName,g.Description,
+                    r.ReqTypeCode,r.ReqTypeDescription,u.Username,t.DateCreated
+                    FROM tblticket t left join tblticketcategory c on t.CategoryID=c.ID
+                    left join tblgroupaccount g on t.GroupID = g.ID
+                    left join tblrequestType r on t.RequestTypeID = r.ID
+                    left join tblusers u on t.CreatedByID = u.ID " . $filter . " order by t.DateCreated asc;";
 
-$selectStatement= "Select ". $SelectQuery . ' ' . $filter . " order by u.Username asc;";
+//$selectStatement= "Select * from " . $tableAffected . ' ' . $filter . " order by DateCreated asc;";
 
 try {
    
@@ -78,7 +77,7 @@ try {
     if ($result) {
         // Fetch and return the data as JSON
         $data = $result->fetch_all(MYSQLI_ASSOC);
-        
+
         if(mysqli_num_rows($result) <= 0)
         {
             throw new Exception('No Record Found');           

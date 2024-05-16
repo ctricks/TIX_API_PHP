@@ -1,9 +1,9 @@
 <?php
-require('configuration/connection.php');
-require('configuration/functions.php');
+require('../configuration/connection.php');
+require('../configuration/functions.php');
 
 // Check if the request method is POST and content type is JSON
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json') {
+if ($_SERVER['REQUEST_METHOD'] !== 'PUT' || empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/json') {
     http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method or content type']);
     exit;

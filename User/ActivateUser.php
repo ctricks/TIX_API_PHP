@@ -14,6 +14,8 @@ $tableAffected = 'tblusers';
 $UserID = isset($_GET['id']) ? $_GET['id']:'';
 $Username = isset($_GET['username']) ? $_GET['username']:'';;
 
+
+
 // Disable autocommit for database transactions
 $conn->autocommit(false);
 

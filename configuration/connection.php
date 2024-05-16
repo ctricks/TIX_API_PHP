@@ -4,6 +4,12 @@
     $password="tix@dmin2024";
     $database="db_a6ebb6_tixdb";
 
+    // For Local Test DB
+    $hostname="localhost";
+    $username="root";
+    $password="Passwordko25";
+    $database="tixdb";
+
 $ctx = mysqli_init();
 
 $conn = mysqli_connect ($hostname, $username, $password,$database);

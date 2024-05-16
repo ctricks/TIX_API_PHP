@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 // Function to build the WHERE clause of the SQL query
 function buildWhereClause($conn, $whereConditions)
 {
